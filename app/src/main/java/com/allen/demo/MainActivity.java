@@ -8,28 +8,37 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.TextView;
+import android.widget.ImageView;
 
 import com.allen.AdapterCreator;
 import com.allen.FocusableAdapter;
 import com.allen.GridViewPager;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private GridViewPager<String> gridViewPager;
-    private List<String> dataList;
+    private GridViewPager<Integer> gridViewPager;
+    private List<Integer> dataList;
+    private static final int[] TEST_PICS = {
+            R.drawable.test1,
+            R.drawable.test2,
+            R.drawable.test3,
+            R.drawable.test4,
+            R.drawable.test5
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        gridViewPager = (GridViewPager<String>) findViewById(R.id.grid_viewpager);
+        gridViewPager = (GridViewPager<Integer>) findViewById(R.id.grid_viewpager);
         buildData();
         gridViewPager.setDataList(dataList);
-        gridViewPager.setAdapterCreator(new AdapterCreator<String>() {
+        gridViewPager.setAdapterCreator(new AdapterCreator<Integer>() {
             @Override
-            public FocusableAdapter createAdapter(GridView gridView, List<String> dataList) {
+            public FocusableAdapter createAdapter(GridView gridView, List<Integer> dataList) {
                 return new MyAdapter(dataList);
             }
 
@@ -42,16 +51,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void buildData() {
         dataList = new ArrayList<>();
-        int i = 1;
-        for (; i <= 100; i++) {
-            dataList.add("data " + i);
+        for (int i = 0; i <= 100; i++) {
+            dataList.add(TEST_PICS[i % TEST_PICS.length]);
         }
     }
 
     private class MyAdapter extends FocusableAdapter {
-        private List<String> data;
+        private List<Integer> data;
 
-        public MyAdapter(List<String> data) {
+        public MyAdapter(List<Integer> data) {
             this.data = data;
         }
 
@@ -74,33 +82,32 @@ public class MainActivity extends AppCompatActivity {
         public View getView(final int position, View convertView, ViewGroup parent) {
             ViewHolder holder = null;
             if (convertView == null) {
-                convertView = LayoutInflater.from(MainActivity.this).inflate(android.R.layout.simple_list_item_1, null);
-                TextView textView = ((TextView) convertView.findViewById(android.R.id.text1));
-                textView.setClickable(true);
-                textView.setOnClickListener(new View.OnClickListener() {
+                convertView = LayoutInflater.from(MainActivity.this).inflate(R.layout.view_list_item, null);
+                ImageView imageView = (ImageView) convertView.findViewById(R.id.image_view);
+                imageView.setClickable(true);
+                imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         gridViewPager.setFocusedItem(position);
                     }
                 });
                 holder = new ViewHolder();
-                holder.textView = textView;
+                holder.imageView = imageView;
                 convertView.setTag(holder);
-            }else {
+            } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            holder.textView = ((TextView) convertView.findViewById(android.R.id.text1));
-            holder.textView.setText(data.get(position));
-            if(focusedId == position){
-                holder.textView.setBackgroundColor(Color.RED);
-            }else {
-                holder.textView.setBackgroundColor(Color.TRANSPARENT);
+            holder.imageView.setImageResource(data.get(position));
+            if (focusedId == position) {
+                holder.imageView.setBackgroundColor(Color.RED);
+            } else {
+                holder.imageView.setBackgroundColor(Color.TRANSPARENT);
             }
             return convertView;
         }
 
-        class ViewHolder{
-            public TextView textView;
+        class ViewHolder {
+            public ImageView imageView;
         }
     }
 

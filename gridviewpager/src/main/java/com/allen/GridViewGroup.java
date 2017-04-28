@@ -24,6 +24,8 @@ public class GridViewGroup<T extends Serializable> extends FrameLayout {
     private List<T> dataList;
     private int columns;
     private int index;
+    private int horizontalSpacing;
+    private int verticalSpacing;
     private AdapterCreator adapterCreator;
     private int focusedItem = Focusable.INVALID_FOCUSED_ID;  //用于fragment被销毁后，重建时可以恢复原来的focusedItem
 
@@ -46,9 +48,9 @@ public class GridViewGroup<T extends Serializable> extends FrameLayout {
         }
     };
 
-    public static <T> GridViewGroup newInstance(Context context, List<T> dataList, int index, int columns, AdapterCreator adapterCreator){
+    public static <T> GridViewGroup newInstance(Context context, List<T> dataList, int index, int columns, int horizontalSpacing, int verticalSpacing, AdapterCreator adapterCreator){
         GridViewGroup view = new GridViewGroup(context);
-        view.init(dataList, index, columns);
+        view.init(dataList, index, columns, horizontalSpacing, verticalSpacing);
         view.setAdapterCreator(adapterCreator);
         return view;
     }
@@ -65,16 +67,21 @@ public class GridViewGroup<T extends Serializable> extends FrameLayout {
         super(context, attrs, defStyleAttr);
     }
 
-    public void init(List<T> dataList, int index, int columns){
+    public void init(List<T> dataList, int index, int columns, int horizontalSpacing, int verticalSpacing){
         this.dataList = dataList;
         this.index = index;
         this.columns = columns;
+        this.horizontalSpacing = horizontalSpacing;
+        this.verticalSpacing = verticalSpacing;
 
         gridView = new CustomGridView(getContext());
         gridView.setGravity(Gravity.CENTER);
         gridView.setNumColumns(columns);
+        gridView.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
         gridView.setSelector(new ColorDrawable(Color.TRANSPARENT));
         gridView.setOverScrollMode(AbsListView.OVER_SCROLL_NEVER);
+        gridView.setHorizontalSpacing(horizontalSpacing);
+        gridView.setVerticalSpacing(verticalSpacing);
 
         gridView.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         addView(gridView);

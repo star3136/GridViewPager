@@ -5,13 +5,15 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#ffc3c3c3"
     tools:context="com.allen.demo.MainActivity">
-
     <com.allen.GridViewPager
         android:id="@+id/grid_viewpager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        app:lines="3"
+        app:horizontal_spacing="2dp"
+        app:vertical_spacing="2dp"
+        app:rows="3"
         app:columns="4"></com.allen.GridViewPager>
 </RelativeLayout>

@@ -29,8 +29,11 @@ public class GridViewPager<T extends Serializable> extends FrameLayout {
     /**
      * 如果lines或columns为0则所有数据在一页内显示
      */
-    private int lines = 0;
+    private int rows = 0;
     private int columns = 0;
+    private int horizontalSpacing;
+    private int verticalSpacing;
+
     private Observable observable = new Observable(){
         @Override
         public void notifyObservers(Object data) {
@@ -62,8 +65,10 @@ public class GridViewPager<T extends Serializable> extends FrameLayout {
         addView(viewPager);
         if (attrs != null) {
             TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.GridViewPager);
-            lines = a.getInteger(R.styleable.GridViewPager_lines, 0);
+            rows = a.getInteger(R.styleable.GridViewPager_rows, 0);
             columns = a.getInteger(R.styleable.GridViewPager_columns, 5);
+            horizontalSpacing = a.getDimensionPixelSize(R.styleable.GridViewPager_horizontal_spacing, 0);
+            verticalSpacing = a.getDimensionPixelOffset(R.styleable.GridViewPager_vertical_spacing, 0);
             a.recycle();
         }
     }
@@ -96,7 +101,7 @@ public class GridViewPager<T extends Serializable> extends FrameLayout {
      * @return
      */
     public int getItemsPerPage() {
-        return columns * lines;
+        return columns * rows;
     }
 
     /**
@@ -127,10 +132,10 @@ public class GridViewPager<T extends Serializable> extends FrameLayout {
     public void setDataList(List<T> dataList) {
         this.dataList = dataList;
         pagedDataList = new ArrayList<>();
-        if(lines == 0 || columns == 0){
+        if(rows == 0 || columns == 0){
             pagedDataList.add(dataList);
         }else {
-            int itemsPerPage = lines * columns;
+            int itemsPerPage = rows * columns;
             int pages = 0;
             if(dataList.size() % itemsPerPage == 0){
                 pages = dataList.size() / itemsPerPage;
@@ -152,7 +157,7 @@ public class GridViewPager<T extends Serializable> extends FrameLayout {
     }
 
     private class MyPagerAdapter extends PagerAdapter {
-        private SparseArray<GridViewGroup<T>> fragmentMap = new SparseArray<>();
+        private SparseArray<GridViewGroup<T>> gridviewMap = new SparseArray<>();
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             GridViewGroup<T> viewGroup = (GridViewGroup<T>) getItem(position);
@@ -161,18 +166,18 @@ public class GridViewPager<T extends Serializable> extends FrameLayout {
         }
 
         public Object getItem(int position){
-            GridViewGroup<T> viewGroup = fragmentMap.get(position);
+            GridViewGroup<T> viewGroup = gridviewMap.get(position);
             if(viewGroup == null) {
-                viewGroup = GridViewGroup.newInstance(context, pagedDataList.get(position), position, columns, adapterCreator);
+                viewGroup = GridViewGroup.newInstance(context, pagedDataList.get(position), position, columns, horizontalSpacing, verticalSpacing, adapterCreator);
                 observable.addObserver(viewGroup.observer);
-                fragmentMap.put(position, viewGroup);
+                gridviewMap.put(position, viewGroup);
             }
             return viewGroup;
         }
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
-            container.removeView(fragmentMap.get(position));
+            container.removeView(gridviewMap.get(position));
         }
 
         @Override

@@ -20,6 +20,8 @@ public class CustomGridView extends GridView {
         super(context, attrs, defStyleAttr);
     }
 
+
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         heightMeasureSpec = MeasureSpec.makeMeasureSpec(Integer.MAX_VALUE >> 1, MeasureSpec.AT_MOST);
